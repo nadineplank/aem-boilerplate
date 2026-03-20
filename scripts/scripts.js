@@ -75,17 +75,20 @@ function buildAutoBlocks(main) {
     console.error('Auto Blocking failed', error);
   }
 
+}
+
+function buildTabsAutoBlocks(main) {
   const tabSections = [...main.querySelectorAll('.section[data-tab]')];
-  console.log('Found tab sections:', tabSections.length); // DEBUG
+  console.log('Found tab sections:', tabSections.length);
   
   if (tabSections.length >= 2) {
-    console.log('Building tabs...'); // DEBUG
+    console.log('Building tabs...');
     const tabsBlock = document.createElement('div');
     tabsBlock.classList.add('tabs');
     
     tabSections.forEach((section) => {
       const tabTitle = section.dataset.tab;
-      console.log('Processing tab:', tabTitle); // DEBUG
+      console.log('Processing tab:', tabTitle);
       
       const row = document.createElement('div');
       row.classList.add('tabs-row');
@@ -108,11 +111,8 @@ function buildAutoBlocks(main) {
     wrapper.append(tabsBlock);
     
     const firstSection = main.querySelector('.section');
-    if (firstSection) {
-      firstSection.before(wrapper);
-    } else {
-      main.prepend(wrapper);
-    }
+    if (firstSection) firstSection.before(wrapper);
+    else main.prepend(wrapper);
   }
 }
 
@@ -163,8 +163,9 @@ function decorateButtons(main) {
 export function decorateMain(main) {
   decorateIcons(main);
   decorateSections(main);
-  buildAutoBlocks(main);
+  buildAutoBlocks(main); 
   decorateBlocks(main);
+  buildTabsAutoBlocks(main); 
   decorateButtons(main);
 }
 
