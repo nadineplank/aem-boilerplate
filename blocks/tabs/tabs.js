@@ -1,48 +1,47 @@
-export default function decorate(block) {
-  const rows = [...block.querySelectorAll(':scope > .tabs-row')];
-  console.log('Tabs decorate: found rows:', rows.length); // DEBUG
-  
-  const tabList = document.createElement('div');
-  tabList.classList.add('tabs-nav');
-  tabList.setAttribute('role', 'tablist');
-  
-  const contentWrapper = document.createElement('div');
-  contentWrapper.classList.add('tabs-content');
-  
-  rows.forEach((row, index) => {
-    const label = row.querySelector('.tabs-label');
-    const panel = row.querySelector('.tabs-panel');
-    
-    // Tab button
-    const tabBtn = document.createElement('button');
-    tabBtn.textContent = label.textContent.trim();
-    tabBtn.classList.add('tabs-tab');
-    tabBtn.setAttribute('role', 'tab');
-    tabBtn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-    
-    tabList.append(tabBtn);
-    
-    // Panel
-    panel.classList.add('tabs-panel-content');
-    if (index !== 0) panel.hidden = true;
-    
-    contentWrapper.append(panel);
-    label.remove();
-  });
-  
-  block.innerHTML = '';
-  block.append(tabList, contentWrapper);
-  
-  // Event listeners
-  tabList.querySelectorAll('.tabs-tab').forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      // Hide all panels
-      contentWrapper.querySelectorAll('.tabs-panel-content').forEach(p => p.hidden = true);
-      // Show clicked
-      contentWrapper.children[index].hidden = false;
-      // Update ARIA
-      tabList.querySelectorAll('.tabs-tab').forEach(b => b.setAttribute('aria-selected', 'false'));
-      btn.setAttribute('aria-selected', 'true');
+// eslint-disable-next-line import/no-unresolved
+import { toClassName } from '../../scripts/aem.js';
+
+export default async function decorate(block) {
+  // build tablist
+  const tablist = document.createElement('div');
+  tablist.className = 'tabs-list';
+  tablist.setAttribute('role', 'tablist');
+
+  // decorate tabs and tabpanels
+  const tabs = [...block.children].map((child) => child.firstElementChild);
+  tabs.forEach((tab, i) => {
+    const id = toClassName(tab.textContent);
+
+    // decorate tabpanel
+    const tabpanel = block.children[i];
+    tabpanel.className = 'tabs-panel';
+    tabpanel.id = `tabpanel-${id}`;
+    tabpanel.setAttribute('aria-hidden', !!i);
+    tabpanel.setAttribute('aria-labelledby', `tab-${id}`);
+    tabpanel.setAttribute('role', 'tabpanel');
+
+    // build tab button
+    const button = document.createElement('button');
+    button.className = 'tabs-tab';
+    button.id = `tab-${id}`;
+    button.innerHTML = tab.innerHTML;
+    button.setAttribute('aria-controls', `tabpanel-${id}`);
+    button.setAttribute('aria-selected', !i);
+    button.setAttribute('role', 'tab');
+    button.setAttribute('type', 'button');
+    button.addEventListener('click', () => {
+      block.querySelectorAll('[role=tabpanel]').forEach((panel) => {
+        panel.setAttribute('aria-hidden', true);
+      });
+      tablist.querySelectorAll('button').forEach((btn) => {
+        btn.setAttribute('aria-selected', false);
+      });
+      tabpanel.setAttribute('aria-hidden', false);
+      button.setAttribute('aria-selected', true);
     });
+    tablist.append(button);
+    tab.remove();
   });
+
+  block.prepend(tablist);
 }
