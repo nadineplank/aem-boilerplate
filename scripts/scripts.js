@@ -69,54 +69,50 @@ function buildAutoBlocks(main) {
 
     buildHeroBlock(main);
 
-    // ===== NEW: Tabs Auto-Blocking =====
-    const tabSections = [...main.querySelectorAll('.section[data-tab]')];
     
-    if (tabSections.length >= 2) {
-      const tabsBlock = document.createElement('div');
-      tabsBlock.classList.add('tabs');
-      
-      tabSections.forEach((section) => {
-        const tabTitle = section.dataset.tab;
-        
-        // Create block-style table row (label + content)
-        const row = document.createElement('div');
-        row.classList.add('tabs-row');
-        
-        // Tab label
-        const label = document.createElement('div');
-        label.textContent = tabTitle;
-        label.classList.add('tabs-label');
-        
-        // Tab content (move section contents)
-        const content = document.createElement('div');
-        content.classList.add('tabs-panel');
-        content.append(...section.children);
-        
-        row.append(label, content);
-        tabsBlock.append(row);
-        
-        // Remove original section
-        section.remove();
-      });
-      
-      // Wrap in new section for EDS block decoration
-      const wrapper = document.createElement('div');
-      wrapper.classList.add('section');
-      wrapper.append(tabsBlock);
-      
-      // Insert before first remaining section (or at top)
-      const firstSection = main.querySelector('.section');
-      if (firstSection) {
-        firstSection.before(wrapper);
-      } else {
-        main.prepend(wrapper);
-      }
-    }
-    // ===== END Tabs Auto-Blocking =====
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
+  }
+
+  const tabSections = [...main.querySelectorAll('.section[data-tab]')];
+  console.log('Found tab sections:', tabSections.length); // DEBUG
+  
+  if (tabSections.length >= 2) {
+    console.log('Building tabs...'); // DEBUG
+    const tabsBlock = document.createElement('div');
+    tabsBlock.classList.add('tabs');
+    
+    tabSections.forEach((section) => {
+      const tabTitle = section.dataset.tab;
+      console.log('Processing tab:', tabTitle); // DEBUG
+      
+      const row = document.createElement('div');
+      row.classList.add('tabs-row');
+      
+      const label = document.createElement('div');
+      label.textContent = tabTitle;
+      label.classList.add('tabs-label');
+      
+      const content = document.createElement('div');
+      content.classList.add('tabs-panel');
+      content.append(...section.children);
+      
+      row.append(label, content);
+      tabsBlock.append(row);
+      section.remove();
+    });
+    
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('section');
+    wrapper.append(tabsBlock);
+    
+    const firstSection = main.querySelector('.section');
+    if (firstSection) {
+      firstSection.before(wrapper);
+    } else {
+      main.prepend(wrapper);
+    }
   }
 }
 
