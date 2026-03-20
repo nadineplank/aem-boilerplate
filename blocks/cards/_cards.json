@@ -1,0 +1,24 @@
+{
+  "definitions": [{
+    "id": "cards",
+    "title": "Cards",
+    "plugins": {
+      "xwalk": {
+        "page": {
+          "template": {
+            "name": "Cards"
+          }
+        }
+      }
+    }
+  }],
+  "models": [{
+    "id": "card",
+    "fields": [
+      {"component": "image", "name": "image", "label": "Image"},
+      {"component": "richtext", "name": "text", "label": "Text"},
+      {"component": "text", "name": "title", "label": "Title"}
+    ]
+  }],
+  "filters": [{"id": "cards", "components": ["card"]}]
+}
